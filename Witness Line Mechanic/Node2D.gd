@@ -1,5 +1,7 @@
 extends Node2D
 
+#Draw the Grid
+
 func _draw():
 	for x in 21:
 		# Draw x

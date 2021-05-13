@@ -1,7 +1,9 @@
-extends TileMap
+extends TileMap  
 
+#This is the Version using Tiles and it has the possibility to backtrack and collide
+#with the line tail but the movement is rough and harder to controll
 
-onready var map = get_parent()
+onready var map  = get_parent()
 onready var line = get_node("Line2D")
 var tiles
 var active :bool = true
@@ -18,8 +20,8 @@ var point_v :Vector2
 
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+#	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+#	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	tiles = map.get_used_cells()
 
 func get_mouse_dir():
@@ -42,11 +44,40 @@ func get_mouse_dir():
 	return dir
 
 
+func _input1(event):
+	if event is InputEventMouseMotion:
+		var tile_pos = map.world_to_map(position)
+		var dir
+
+		vector += event.relative
+
+		if vector.length() >= 32:
+			dir = get_mouse_dir()
+
+			if not tiles.has(curr_tile + dir):
+				return
+
+			if route.has(curr_tile+dir) && curr_tile != start_tile:
+				if curr_tile + dir == route[-2]:
+					set_cellv(curr_tile,-1)
+					route.erase(curr_tile)
+				else:
+					return
+
+			else:
+				set_cellv(curr_tile + dir, 0)
+				route.append(curr_tile + dir)
+			
+			last_tile = curr_tile
+			curr_tile += dir
+
+
 func _input(event):
 	if event is InputEventMouseMotion:
 		var tile_pos = map.world_to_map(position)
 		var dir
 
+		
 		vector += event.relative
 
 		if vector.length() >= 32:
